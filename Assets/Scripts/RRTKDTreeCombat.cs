@@ -326,7 +326,7 @@ namespace Exploration {
 					p2.y = p1.y;
 					float dist = Vector3.Distance (p1, p2);
 					
-					float t = dist * Mathf.Tan (angle);
+					float t = dist * Mathf.Tan (angle*Mathf.Deg2Rad);
 					pd = p2;
 					pd.y += t;
 					

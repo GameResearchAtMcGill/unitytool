@@ -3,13 +3,17 @@ using UnityEngine;
 using System.Collections.Generic;
 using Common;
 using Extra;
+using System.Linq;
+using ANN;
+using Learning;
 
 namespace EditorArea {
 	
 	public class MapperEditorDrawer : MonoBehaviour {
 		
 		// Options
-		public bool drawMap = true, drawNeverSeen = false, drawHeatMap = true, drawPath = false, editGrid = false, drawFoVOnly = false, drawCombatLines = false;
+		public bool drawMap = true, drawNeverSeen = false, drawHeatMap = true, drawPath = false, editGrid = false, drawFoVOnly = false, drawCombatLines = false
+		, drawByTimeSlice = true, draw1By1Path = true, drawQValues = false;
 		
 		// Caller must set these up
 		public Cell[][][] fullMap;
@@ -18,8 +22,11 @@ namespace EditorArea {
 		public float[][] seenNeverSeen;
 		public Vector2 zero = new Vector2 (), tileSize = new Vector2 ();
 		
+		public int pathNum2draw = 0;
+		
 		// Optional things
-		public Dictionary<Path, bool> paths = new Dictionary<Path, bool> ();
+		public System.Collections.Generic.Dictionary<Path, bool> paths = new System.Collections.Generic.Dictionary<Path, bool> ();
+		
 		public Cell[][] editingGrid;
 		public List<Tuple<Vector3, string>> textDraw;
 		
@@ -31,8 +38,12 @@ namespace EditorArea {
 		public float heatMapMax, deathHeatMapMax, combatHeatMap2dMax;
 		public int[] heatMapMax3d, deathHeatMapMax3d;
 		
+		public NeuralNetwork ann;
+		public StateManager sm;
+		
 		// Fixed values
 		private Color orange = new Color (1.0f, 0.64f, 0f, 1f), transparent = new Color (1f, 1f, 1f, 0f);
+		private Color blue = new Color (0f, 0f, 1f, 1f);
 		
 		public void Start () {
 			hideFlags = HideFlags.HideInInspector;
@@ -48,6 +59,8 @@ namespace EditorArea {
 					if (drawFoVOnly) {
 						if (c != null && c.seen)
 							Gizmos.color = orange;
+//						else if( c != null && c.sight )
+//							Gizmos.color = blue;
 						else
 							Gizmos.color = transparent;
 					} else {
@@ -98,6 +111,8 @@ namespace EditorArea {
 						if (drawFoVOnly) {
 							if (c.seen)
 								Gizmos.color = orange;
+							else if( c.sight )
+								Gizmos.color = blue;
 							else
 								Gizmos.color = transparent;
 						} else {
@@ -107,6 +122,8 @@ namespace EditorArea {
 								Gizmos.color = Color.red;
 							else if (c.seen)
 								Gizmos.color = orange;
+							else if( c.sight )
+								Gizmos.color = blue;
 							else if (c.noisy)
 								Gizmos.color = Color.yellow;
 							else if (c.waypoint)
@@ -130,36 +147,66 @@ namespace EditorArea {
 					 tileSize.y - tileSize.y * 0.05f));
 				}
 			}
+			/*
+			if( drawQValues && ann != null && sm != null ){
+//				for( int i = 0; i < fullMap.Length; i++ ) {
+					for( int j = 0; j < fullMap[0].Length; j++ ){
+						for( int k = 0; k < fullMap[0][0].Length; k++ ){
+							State s = sm.
+							Gizmos.DrawIcon(new Vector3((n.x * tileSize.x + zero.x), 0.1f, (n.y * tileSize.x + zero.y)), "r_arrow.png" );
+							
+						}
+					}
+//				}	
+			}
+			*/
 			
 			// All Paths drawning
 			if (drawPath) {
 				Gizmos.color = Color.blue;
-				foreach (KeyValuePair<Path, bool> kv in paths)
-				if (kv.Value) {
-					foreach (Node n in kv.Key.points) {
-						Gizmos.color = kv.Key.color;
-						if (n.parent != null) {
-							Gizmos.DrawLine (new Vector3
-							                 ((n.x * tileSize.x + zero.x),
-							 0.1f,
-							 (n.y * tileSize.x + zero.y)),
-							                 
-							                 new Vector3
-							                 ((n.parent.x * tileSize.y + zero.x),
-							 0.1f,
-							 (n.parent.y * tileSize.y + zero.y)));
+																				
+				KeyValuePair<Path, bool> kv;
+				foreach (KeyValuePair<Path, bool> kkv in paths){
+					if( draw1By1Path ){					
+						Path k = paths.Keys.ToList()[pathNum2draw];
+						bool v = paths[k];
+						kv = new KeyValuePair<Path, bool>( k, v);
+					}
+					else
+						kv = kkv;
+					if (kv.Value) {
+						foreach (Node n in kv.Key.points) {
 							
-							if (drawCombatLines && n.parent.fighting != null && n.parent.fighting.Count > 0 && n.t >= timeSlice && n.parent.t <= timeSlice) {
-								Gizmos.color = Color.red;
+	
+							if( drawByTimeSlice && n.t > timeSlice )
+								continue;
+	
+							Gizmos.color = kv.Key.color;
+							if (n.parent != null) {
+								                Gizmos.DrawLine (new Vector3
+								                 ((n.x * tileSize.x + zero.x),
+								 0.1f,
+								 (n.y * tileSize.x + zero.y)),
+								                 
+								                 new Vector3
+								                 ((n.parent.x * tileSize.y + zero.x),
+								 0.1f,
+								 (n.parent.y * tileSize.y + zero.y)));
 								
-								for (int ei = 0; ei < n.parent.fighting.Count; ei++)
-									Gizmos.DrawLine (new Vector3
-									                 ((n.x * tileSize.x + zero.x),
-									 0.1f,
-									 (n.y * tileSize.x + zero.y)),
-									                 n.parent.fighting[ei].positions[timeSlice]);
-							}
+								if (drawCombatLines && n.parent.fighting != null && n.parent.fighting.Count > 0 && n.t >= timeSlice && n.parent.t <= timeSlice) {
+									Gizmos.color = Color.red;
+									
+									for (int ei = 0; ei < n.parent.fighting.Count; ei++)
+										Gizmos.DrawLine (new Vector3
+										                 ((n.x * tileSize.x + zero.x),
+										 0.1f,
+										 (n.y * tileSize.x + zero.y)),
+										                 n.parent.fighting[ei].positions[timeSlice]);
+								}
+							}							
 						}
+						if( draw1By1Path )
+							break;
 					}
 				}
 			}

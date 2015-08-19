@@ -41,7 +41,27 @@ namespace Common {
 		public PathBulk () {
 			paths = new List<Path> ();
 		}
-		
+
+		//태영 코드
+		public static void SaveXYT2File (string file, List<Path> paths) {
+			System.IO.StreamWriter writer = new System.IO.StreamWriter( file );
+			
+			Path aPath;
+			Node aPoint;
+			for( int i = 0; i < paths.Count; i++ ){
+				writer.WriteLine( "path " + i + "\n" );
+				aPath = paths[ i ];
+				
+				for( int j = 0; j < aPath.points.Count; j++ ){
+					aPoint = aPath.points[ j ];
+					writer.WriteLine( "x : " + aPoint.x +", y : " + aPoint.y + ", t : " + aPoint.t );
+				}
+				writer.WriteLine( " ");
+				
+			}
+			writer.Close();
+		}
+
 		public static void SavePathsToFile (string file, List<Path> paths) {
 			XmlSerializer ser = new XmlSerializer (typeof(PathBulk));
 			

@@ -48,7 +48,6 @@ namespace KDTreeDLL
             m_root = null;
         }
 
-
         /** 
          * Insert a node in a KD-tree.  Uses algorithm translated from 352.ins.c of
          *
