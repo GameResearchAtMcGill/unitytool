@@ -33,7 +33,7 @@ namespace Exploration {
         private bool checkWaste = false;
         private bool useDist = true;
         //First attempt was 50% distractions.
-        private int distractables = 100;
+        private int distractables = 80;
 		private int numNears = 3;
 
         private float rangeDist = 5f;
@@ -1796,10 +1796,10 @@ namespace Exploration {
 			}
 
 			//TODO CHANGE WHEN VECTROSITY WORKS AGAIN!
-			GameObject treePic = new GameObject("pathDrawing");
+			/*GameObject treePic = new GameObject("pathDrawing");
 			foreach(NodeGeo node in points){
 				DrawNode(node, treePic, Color.red);
-			}
+			}*/
 
 			return points;
 		}

@@ -1,9 +1,0 @@
-Text is being written
-2 search attempts were made, on average the following data:
-The search type was normal
-Success,RRTs,Nodes,NodesRej,NodesWasted,Time,RRTsF,NodesF,NodesRejF,NodesWatedF,TimeF
-1,6,22903.5,0,0,8.65388705,NaN,NaN,NaN,NaN,NaN
---------------------------
---------------------------
-11,42193,0,15.8551836,1
-1,3614,0,1.4525905,1

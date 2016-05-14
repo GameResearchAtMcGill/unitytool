@@ -578,9 +578,13 @@ public class Triangulation : MonoBehaviour
         //Debug.Log(obsGeos);
         //Debug.Log(obsGeos.Count);
         //TODO REMOVE DEBUG
-       /*GameObject parent = new GameObject("DebugParent");
+        //GameObject pparent = new GameObject("DebugParent");
+        /*
+        GameObject parent;
         Debug.Log(obsGeos.Count);
         foreach(Geometry ggg in obsGeos) {
+            parent = new GameObject("Geo");
+            parent.transform.parent = pparent.transform;
             foreach (Line l in ggg.edges/*obsGeos[0].edges/**//*) {
                 //Debug.Log(l.vertex[0] + "," + l.vertex[1]);
 
@@ -606,29 +610,61 @@ public class Triangulation : MonoBehaviour
                 scale.y = 0.2f;
 
                 lin.transform.localScale = scale;
-
-
-
-
-
-
-
-
-
             }
         }/**/
         //TODO END OF DEBUG TO REMOVE
 
-		List<Geometry> finalPoly = new List<Geometry> ();//Contains all polygons that are fully insde the map
+
+
+        /*
+        parent = new GameObject("MapBG1");
+        foreach (Line l in mapBG.edges) {
+            //Debug.Log(l.vertex[0] + "," + l.vertex[1]);
+
+            GameObject lin = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            lin.GetComponent<Renderer>().sharedMaterial.color = Color.red;
+            lin.transform.parent = parent.transform;
+            lin.transform.position = (l.vertex[0] + l.vertex[1]) / 2.0f;
+            lin.transform.position = new Vector3(lin.transform.position.x, 0.05f * lin.transform.position.y, lin.transform.position.z);
+            Vector3 dists = (l.vertex[1] - l.vertex[0]);
+            dists.y = 0.05f * dists.y;
+
+            Vector3 from = Vector3.right;
+            Vector3 to = dists / dists.magnitude;
+
+            Vector3 axis = Vector3.Cross(from, to);
+            float angle = Mathf.Rad2Deg * Mathf.Acos(Vector3.Dot(from, to));
+            lin.transform.RotateAround(lin.transform.position, axis, angle);
+
+
+            Vector3 scale = Vector3.one;
+            scale.x = Vector3.Magnitude(dists);
+            scale.z = 0.2f;
+            scale.y = 0.2f;
+
+            lin.transform.localScale = scale;
+        }
+        */
+
+
+
+
+
+
+
+
+        List<Geometry> finalPoly = new List<Geometry> ();//Contains all polygons that are fully insde the map
 		foreach ( Geometry g in obsGeos ) {
 			if( mapBG.GeometryIntersect( g ) && !mapBG.GeometryInside( g ) ){
                 //mapBG.debuggery = true;
                 //g.debuggery = true;
+ 
 				mapBG = mapBG.GeometryMergeInner( g );
+
                 //mapBG.debuggery = false;
                 //g.debuggery = false;
-				mapBG.BoundGeometry( mapBoundary );
-			}
+                mapBG.BoundGeometry( mapBoundary );
+            }
 			else
 				finalPoly.Add(g);
 		}
@@ -661,11 +697,20 @@ public class Triangulation : MonoBehaviour
 		lines.Clear ();
 
 
-		//-----------START MST CODE------------------//
-		//We will use "mapBG" and "finalPoly"
-		//finalPoly contains the "quadrilaters"
-		//get all lines from quadrilaters/finalPoly and put them in "lines" || We use "obsLines"
-		List<Line> obsLines = new List<Line> ();
+        
+
+
+
+
+
+
+
+
+        //-----------START MST CODE------------------//
+        //We will use "mapBG" and "finalPoly"
+        //finalPoly contains the "quadrilaters"
+        //get all lines from quadrilaters/finalPoly and put them in "lines" || We use "obsLines"
+        List<Line> obsLines = new List<Line> ();
 		List<Geometry> toCheck = new List<Geometry> ();
 		foreach (Geometry g in finalPoly) {
 			foreach( Line l in g.edges )

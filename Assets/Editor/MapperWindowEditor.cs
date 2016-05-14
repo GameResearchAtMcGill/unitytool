@@ -95,7 +95,7 @@ namespace EditorArea {
                 List<Triangle> tris = triangles.triangles;
                 Triangle startTri = null;
                 //Vector3 startPoint = new Vector3(-45, 1, 45);
-                Vector3 startPoint = new Vector3(-20, 1, 20);
+                Vector3 startPoint = new Vector3(-20, 1, -20);
                 foreach (Triangle t in tris) {
                     if (t.containsPoint(startPoint)) {
                         startTri = t;
@@ -234,11 +234,13 @@ namespace EditorArea {
                 triangles.TriangulationSpace();
                 List<Triangle> tris = triangles.triangles;
                 Triangle startTri = null;
-                Vector3 startPoint = new Vector3(-45, 1, 45);
+                //Vector3 startPoint = new Vector3(-45, 1, 45);
                 //Vector3 startPoint = new Vector3(-20, 1, 20);
                 //Vector3 endPoint = new Vector3(43, 1, -42.7f);
-                Vector3 endPoint = new Vector3(47, 1, -46);
+                Vector3 startPoint = new Vector3(-20, 1, -20);
+                //Vector3 endPoint = new Vector3(47, 1, -46);
                 //Vector3 endPoint = new Vector3(20, 1, -20);
+                Vector3 endPoint = new Vector3(20, 1, 20);
                 Triangle endTri = null;
                 foreach (Triangle t in tris) {
                     if (t.containsPoint(startPoint)) {
@@ -333,6 +335,46 @@ namespace EditorArea {
                 rrt.generateMidPoints(startX, startY, endX, endY, tris);
 
             }
+
+
+            if (GUILayout.Button("Test Stuff4")) {
+                Debug.Log("Button PRessed");
+
+                triangles = GameObject.Find("Triangulation").GetComponent<Triangulation>();
+
+                RRTKDTreeGEO rrt = new RRTKDTreeGEO();
+                /*List<Geometry> obstacles = triangles.TriangulationSpace();
+                List<Triangle> tris = triangles.triangles;
+
+                if (start == null) {
+                    start = GameObject.Find("Start");
+                }
+                if (end == null) {
+                    end = GameObject.Find("End");
+                }
+                float startX = start.transform.position.x;
+                float startY = start.transform.position.z;
+                float endX = end.transform.position.x;
+                float endY = end.transform.position.z;
+
+                rrt.generateMidPoint(startX, startY, endX, endY, tris, false);
+                rrt.generateMidPoint(startX, startY, endX, endY, tris, true);
+                rrt.generateMidPoints(startX, startY, endX, endY, tris);*/
+
+
+                EnemyGeo e = GameObject.Find("EnemyGeo Bot").GetComponent<EnemyGeo>();
+                
+                Debug.Log(rrt.checkCollE(e, 0, 100, -9, new List<int>(), new List<int>()));
+
+                Debug.Log(e.getPosition(100));
+
+
+
+
+
+            }
+
+
 
             #region Pre-Init
 

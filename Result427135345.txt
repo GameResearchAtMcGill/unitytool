@@ -1,9 +1,0 @@
-Text is being written
-2 search attempts were made, on average the following data:
-The search type was single midpoint
-Success,RRTs,Nodes,NodesRej,RRTs2,Nodes2,NodesRej2,Time,RRTsF,NodesF,NodesRejF,RRTs2F,Nodes2F,NodesRej2F,TimeF,
-0.5,1,2470,3,5,19420,14,346.4289844,1,552,0,100,400439,339,6939.0318736
---------------------------
---------------------------
-1,2470,5,19420,346.4289844,1
-1,552,100,400439,6939.0318736,0
